@@ -1,0 +1,45 @@
+{
+  "name": "@hyy22/shortcuts",
+  "version": "0.0.1",
+  "description": "some usable shortcuts run by cli",
+  "main": "src/index.js",
+  "bin": {
+    "shortcuts": "src/index.js"
+  },
+  "scripts": {
+    "lint": "eslint . --ext .js,.jsx,.cjs,.mjs --fix",
+    "prepare": "husky install"
+  },
+  "keywords": [
+    "image generate",
+    "open url by alias",
+    "quick url visit",
+    "生成自定义尺寸图片",
+    "url别名",
+    "命令行快速访问url"
+  ],
+  "author": "hyy22",
+  "license": "MIT",
+  "lint-staged": {
+    "*.{js,jsx,cjs,mjs}": "eslint --cache --fix",
+    "*.{js,css,md}": "prettier --write"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^8.2.0",
+    "fs-extra": "^10.1.0",
+    "open": "^8.4.0",
+    "sharp": "^0.29.1",
+    "text-to-svg": "^3.1.5"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.0.3",
+    "@commitlint/config-conventional": "^17.0.3",
+    "eslint": "^8.21.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1"
+  }
+}
