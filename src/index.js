@@ -2,6 +2,7 @@
 const { program } = require('commander');
 const imgen = require('./libs/imgen');
 const webopen = require('./libs/webopen');
+const translate = require('./libs/translate');
 
 // 版本号
 program.version('1.0.1');
@@ -29,6 +30,18 @@ program
   .arguments('<args...>')
   .action((args) => {
     webopen(args);
+  });
+
+// google翻译
+// translate 'hello world' -f en -t zh-CN #你好世界
+program
+  .command('translate')
+  .description('google translate')
+  .argument('<string>', 'string to translate')
+  .option('-f, --from <from>', 'from language', 'auto')
+  .option('-t, --to <to>', 'to language', 'en')
+  .action((text, option) => {
+    translate(text, option);
   });
 
 // parse args
