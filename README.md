@@ -20,6 +20,7 @@ yarn link
 ```
 alias img 'shortcuts imgen'
 alias web 'shortcuts webopen'
+alias translate 'shortcuts translate'
 ```
 
 ## 查看命令
@@ -64,4 +65,11 @@ web alias webdev https://${project:gys}-${env}.xxx.com
 web webdev env=i7+stage
 # 删除别名
 web unalias baidu
+```
+
+## 谷歌翻译
+
+```bash
+translate '你好世界' # Hello World
+translate 'hello world' -t zh-CN # 你好世界
 ```

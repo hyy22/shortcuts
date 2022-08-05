@@ -5,7 +5,7 @@ const webopen = require('./libs/webopen');
 const translate = require('./libs/translate');
 
 // 版本号
-program.version('1.0.1');
+program.version('0.0.2');
 
 // img generate
 // imgen -s 100x200 -t png -f
