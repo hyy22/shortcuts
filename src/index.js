@@ -1,22 +1,29 @@
 #!/usr/bin/env node
 const { program } = require('commander');
-const imgen = require('./libs/imgen');
+const { main: imgen, handleConfig: configImgen } = require('./libs/imgen');
 const webopen = require('./libs/webopen');
 const translate = require('./libs/translate');
 
 // 版本号
-program.version('0.0.2');
+program.version('0.0.3');
 
 // img generate
-// imgen -s 100x200 -t png -f
+// imgen 100x200 -t png -f
 program
   .command('imgen')
   .description('generate img by custom size')
-  .requiredOption('-s, --size <size>', 'custom size')
+  .argument('<size>', 'define custom size')
   .option('-t, --type <type>', 'generate img type', 'jpg')
   .option('-f, --force', 'force generate although img exist', false)
-  .action(({ size, type, force }) => {
-    imgen(size, type, force);
+  .option('-o, --outdir <outdir>', 'define image output dir')
+  .action((size, { type, force, outdir }) => {
+    imgen({ size, type, force, outdir });
+  })
+  // add config command
+  .command('config')
+  .arguments('<args...>')
+  .action((args) => {
+    configImgen(...args);
   });
 
 // web open
