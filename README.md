@@ -35,9 +35,17 @@ shortcuts help
 
 ```bash
 # 生成100x200的png图片
-img -s 100x200 -t png
+img 100x200 -t png
 # 强制重新生成
-img -s 100x200 -t png -f
+img 100x200 -t png -f
+# 指定生成路径
+img 100x200 -o $HOME/Desktop
+# 配置默认路径
+img config set OUTDIR $HOME/Downloads
+# 读取配置
+img config get OUTDIR
+# 移除配置
+img config unset OUTDIR
 ```
 
 ## 快捷访问url
