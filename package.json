@@ -1,6 +1,6 @@
 {
   "name": "@hyy22/shortcuts",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "some usable shortcuts run by cli",
   "main": "src/index.js",
   "bin": {
@@ -14,6 +14,7 @@
     "image generate",
     "open url by alias",
     "quick url visit",
+    "generate markdown file with front matter",
     "生成自定义尺寸图片",
     "url别名",
     "命令行快速访问url"

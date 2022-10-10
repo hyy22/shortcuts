@@ -3,9 +3,10 @@ const { program } = require('commander');
 const { main: imgen, handleConfig: configImgen } = require('./libs/imgen');
 const webopen = require('./libs/webopen');
 const translate = require('./libs/translate');
+const { main: mdgen, handleConfig: configMdgen } = require('./libs/mdgen');
 
 // 版本号
-program.version('0.0.3');
+program.version('0.0.4');
 
 // img generate
 // imgen 100x200 -t png -f
@@ -41,6 +42,7 @@ program
 
 // google翻译
 // translate 'hello world' -f en -t zh-CN #你好世界
+// ！！谷歌关闭服务，现已无法使用
 program
   .command('translate')
   .description('google translate')
@@ -49,6 +51,27 @@ program
   .option('-t, --to <to>', 'to language', 'en')
   .action((text, option) => {
     translate(text, option);
+  });
+
+// markdown模版文件生成
+// mdgen '文件名称' --title='文章标题，没有就使用文件名称' --category='目录名称' --tag='标签逗号隔开'
+// mdgen config DEFAULT_OUT_DIR $HOME
+program
+  .command('mdgen')
+  .description('generate markdown template file with front matter')
+  .argument('<filename>', 'file name')
+  .option('-T, --title <title>', 'the title of markdown')
+  .option('-c, --category <category>', 'category or dirname')
+  .option('-t, --tag <tag>', 'tags of markdown')
+  .option('-d, --dir <dir>', 'where the markdown output')
+  .action((filename, option) => {
+    mdgen(filename, option);
+  })
+  // add config command
+  .command('config')
+  .arguments('<args...>')
+  .action((args) => {
+    configMdgen(...args);
   });
 
 // parse args
