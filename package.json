@@ -8,7 +8,8 @@
   },
   "scripts": {
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs --fix",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "md": "node build/md.js"
   },
   "keywords": [
     "image generate",
