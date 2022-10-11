@@ -1,7 +1,6 @@
 # 命令行快捷指令
 
-作为一名切图仔，开发时总会遇到一些不难却麻烦费时费力的问题，比如要测试一个特定尺寸图片上传的问题，图片从哪里来？可能有的人会直接打开百度图片搜索200*300尺寸的png图片，还有的就默默打开了photoshop???，当然也有网站可以直接生成特定尺寸的图片。。
-TODO待补充
+自己在用的一些命令行工具合集
 
 ## 安装
 
@@ -17,7 +16,7 @@ yarn link
 
 > 如果使用zsh可以设置别名`nano .zshrc`
 
-```
+```bash
 alias img 'shortcuts imgen'
 alias web 'shortcuts webopen'
 alias translate 'shortcuts translate'
@@ -29,55 +28,60 @@ alias translate 'shortcuts translate'
 shortcuts help
 ```
 
-## 图片生成
+## 命令列表
 
-> 在当前目录下生成图片
+### 特定尺寸纯色图片生成
+
+> 用于测试场景，比如一个上传控件限制了图片尺寸，执行后会在当前目录下生成一张特定尺寸/格式的图片，可以定义默认图片生成路径
 
 ```bash
-# 生成100x200的png图片
-img 100x200 -t png
-# 强制重新生成
-img 100x200 -t png -f
-# 指定生成路径
-img 100x200 -o $HOME/Desktop
-# 配置默认路径
-img config set OUTDIR $HOME/Downloads
-# 读取配置
-img config get OUTDIR
-# 移除配置
-img config unset OUTDIR
+# 生成一张100x200的png图片
+imgen 100x200 -t png
+# 重新生成一张100x200的png图片
+imgen 100x200 -t png -f
+# 在指定目录下生成一张图片
+imgen 100x200 -t png -o '/home/xxx/downloads'
+# 配置默认生成目录
+imgen config set OUTDIR '/home/xxx/downloads'
 ```
 
-## 快捷访问url
 
-> 可以设置别名，快速访问url
+### 快速打开网页
+
+> 通过命令行快速打开网页，能够提高部分效率，比如开发时区分环境部署，一般只需要换个环境参数
 
 ```bash
-# 直接打开百度
-web https://baidu.com
+# 打开baidu
+webopen https://baidu.com
 # 设置别名
-web alias baidu https://www.baidu.com/s?wd=${keyword}
-# 别名打开
-web baidu "今天吃什么"
-# 获取别名
-web alias baidu
-# 获取所有别名
-web alias
-# 多个参数，会同时打开多个网页
-web baidu "今天吃什么+不知道"
-# 具名参数，可以不分顺序先后
-web alias webdev https://${project}-${env}.xxx.com
-web webdev env=i7+stage project=gys
-# 默认值
-web alias webdev https://${project:gys}-${env}.xxx.com
-web webdev env=i7+stage
-# 删除别名
-web unalias baidu
+webopen alias baidu https://www.baidu.com/s?wd=${keyword}
+# 通过别名打开baidu并搜索
+webopen baidu "今天吃什么"
+# 显示所有别名
+webopen alias
+# 同时打开多个页面
+webopen baidu "今天吃什么+不想吃饭"
 ```
 
-## 谷歌翻译
+
+### google翻译
+
+> ！！谷歌关闭服务，现已无法使用
 
 ```bash
-translate '你好世界' # Hello World
-translate 'hello world' -t zh-CN # 你好世界
+translate 'hello world' -f en -t zh-CN # 你好世界
+```
+
+
+### markdown模版文件生成
+
+> 在指定目录生成一个带有front matter的markdown文件
+
+```bash
+# 指定目录生成md文件
+mdgen '文件名称' -d '/home/xxx/downloads'
+# 生成带有标题、目录、标签的文件
+mdgen '文件名称' --title='文章标题，没有就使用文件名称' --category='目录名称' --tag='标签逗号隔开'
+# 配置默认目录
+mdgen config DEFAULT_OUT_DIR '/home/xxx/downloads'
 ```
