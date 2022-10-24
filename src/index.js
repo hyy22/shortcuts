@@ -89,7 +89,7 @@ program
  * # 生成带有标题、目录、标签的文件
  * mdgen '文件名称' --title='文章标题，没有就使用文件名称' --category='目录名称' --tag='标签逗号隔开'
  * # 配置默认目录
- * mdgen config DEFAULT_OUT_DIR '/home/xxx/downloads'
+ * mdgen config set DEFAULT_OUT_DIR '/home/xxx/downloads'
  * @example
  */
 program
