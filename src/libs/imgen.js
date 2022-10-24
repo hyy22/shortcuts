@@ -1,6 +1,5 @@
-const sharp = require('sharp');
-const text2svg = require('text-to-svg');
-const { existsSync } = require('fs');
+const { createCanvas } = require('canvas');
+const { existsSync, createWriteStream } = require('fs');
 const path = require('path');
 const chalk = require('chalk');
 const { init: initConfig } = require('../utils/config');
@@ -48,20 +47,34 @@ function parseWH(size) {
  * @returns
  */
 function generateImage(size, rgba, type = 'jpg') {
-  let stream = sharp({
-    create: {
-      width: size.w,
-      height: size.h,
-      channels: 4,
-      background: {
-        r: rgba.r,
-        g: rgba.g,
-        b: rgba.b,
-        alpha: type === 'png' ? rgba.a : 1,
-      },
-    },
-  });
-  return type === 'png' ? stream.png() : stream.jpeg();
+  const canvas = createCanvas(size.w, size.h);
+  const ctx = canvas.getContext('2d');
+  // 定义填充颜色
+  ctx.fillStyle =
+    type === 'png'
+      ? `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`
+      : `rgb(${rgba.r}, ${rgba.g}, ${rgba.b})`;
+  // 绘制矩形
+  ctx.fillRect(0, 0, size.w, size.h);
+  // 绘制文字
+  const renderText = `${size.w}X${size.h}`;
+  const {
+    width: textWidth,
+    actualBoundingBoxAscent,
+    actualBoundingBoxDescent,
+  } = ctx.measureText(renderText);
+  if (textWidth < size.w) {
+    ctx.fillStyle = '#fff';
+    ctx.font = '14px';
+    ctx.fillText(
+      renderText,
+      size.w / 2 - textWidth / 2,
+      size.h / 2 - (actualBoundingBoxAscent + actualBoundingBoxDescent) / 2,
+      size.w
+    );
+  }
+  // 输出
+  return type === 'png' ? canvas.createPNGStream() : canvas.createJPEGStream();
 }
 
 /**
@@ -71,7 +84,7 @@ function generateImage(size, rgba, type = 'jpg') {
  * @param {Boolean} force 是否重新生成
  * @param {String} outdir 图片输出目录
  */
-exports.main = async function ({ size, type = 'jpg', force, outdir }) {
+exports.main = function ({ size, type = 'jpg', force, outdir }) {
   // 确定输出路径，优先级：outdir -> prefer -> pwd
   const OUTDIR = outdir || config.get('OUTDIR') || process.cwd();
   // 图片生成规则
@@ -89,26 +102,10 @@ exports.main = async function ({ size, type = 'jpg', force, outdir }) {
     console.log(chalk.red(e.message));
   }
   let colorObject = generateRandomColor();
-  // 生成文字svg
-  const textSvg = text2svg.loadSync().getSVG(size, {
-    x: 0,
-    y: 0,
-    fontSize: 32,
-    anchor: 'top',
-    attributes: {
-      fill: 'white',
-    },
-  });
-  // 合成失败就取消合成
-  try {
-    await generateImage(sizeObject, colorObject, type)
-      .composite([
-        { input: Buffer.from(textSvg), gravity: 'center', failOnError: false },
-      ])
-      .toFile(filepath);
-  } catch (e) {
-    await generateImage(sizeObject, colorObject, type).toFile(filepath);
-  }
+  // 生成图片
+  const writeStream = createWriteStream(filepath);
+  const readStream = generateImage(sizeObject, colorObject, type);
+  readStream.pipe(writeStream);
   // 返回路径
   console.log(chalk.green(filepath));
 };
