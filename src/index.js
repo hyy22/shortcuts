@@ -11,7 +11,7 @@ const {
 } = require('./libs/cloudmusic');
 
 // 版本号
-program.version('0.0.4');
+program.version('0.0.5');
 
 /**
  * 用于测试场景，比如一个上传控件限制了图片尺寸，执行后会在当前目录下生成一张特定尺寸/格式的图片，可以定义默认图片生成路径

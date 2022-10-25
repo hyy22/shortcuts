@@ -85,3 +85,21 @@ mdgen '文件名称' --title='文章标题，没有就使用文件名称' --cate
 # 配置默认目录
 mdgen config set DEFAULT_OUT_DIR '/home/xxx/downloads'
 ```
+
+
+### 网易云音乐
+
+> 一些通过命令行直接操作网易云音乐的方法，功能有上传本地音乐到云盘...
+
+```bash
+# 登录
+cloudmusic login 手机号 密码
+# 上传当前目录的全部音乐
+cloudmusic upload
+# 上传当前目录的指定音乐
+cloudmusic upload '枫.mp3' '搁浅.mp3'
+# 配置默认上传路径，不配置就使用当前目录
+cloudmusic config set DEFAULT_UPLOAD_DIR /home/xx/music
+# 指定上传目录
+cloudmusic upload -d /home/xx/music
+```
