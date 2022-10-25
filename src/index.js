@@ -1,9 +1,14 @@
 #!/usr/bin/env node
-const { program } = require('commander');
+const { program, Command } = require('commander');
 const { main: imgen, handleConfig: configImgen } = require('./libs/imgen');
 const webopen = require('./libs/webopen');
 const translate = require('./libs/translate');
 const { main: mdgen, handleConfig: configMdgen } = require('./libs/mdgen');
+const {
+  upload: uploadCloudmusic,
+  handleConfig: configCloudmusic,
+  login: loginCloudmusic,
+} = require('./libs/cloudmusic');
 
 // 版本号
 program.version('0.0.4');
@@ -22,22 +27,27 @@ program.version('0.0.4');
  * imgen config set OUTDIR '/home/xxx/downloads'
  * @example
  */
-program
-  .command('imgen')
-  .description('generate img by custom size')
-  .argument('<size>', 'define custom size')
-  .option('-t, --type <type>', 'generate img type', 'jpg')
-  .option('-f, --force', 'force generate although img exist', false)
-  .option('-o, --outdir <outdir>', 'define image output dir')
-  .action((size, { type, force, outdir }) => {
-    imgen({ size, type, force, outdir });
-  })
+function buildImgenCommand() {
+  const imgenCmd = new Command('imgen');
+  imgenCmd
+    .description('generate img by custom size')
+    .argument('<size>', 'define custom size')
+    .option('-t, --type <type>', 'generate img type', 'jpg')
+    .option('-f, --force', 'force generate although img exist', false)
+    .option('-o, --outdir <outdir>', 'define image output dir')
+    .action((size, { type, force, outdir }) => {
+      imgen({ size, type, force, outdir });
+    });
   // add config command
-  .command('config')
-  .arguments('<args...>')
-  .action((args) => {
-    configImgen(...args);
-  });
+  imgenCmd
+    .command('config')
+    .arguments('<args...>')
+    .action((args) => {
+      configImgen(...args);
+    });
+  return imgenCmd;
+}
+program.addCommand(buildImgenCommand());
 
 /**
  * 通过命令行快速打开网页，能够提高部分效率，比如开发时区分环境部署，一般只需要换个环境参数
@@ -55,13 +65,17 @@ program
  * webopen baidu "今天吃什么+不想吃饭"
  * @example
  */
-program
-  .command('webopen')
-  .description('open url quickly')
-  .arguments('<args...>')
-  .action((args) => {
-    webopen(args);
-  });
+function buildWebopenCommand() {
+  const webopenCmd = new Command('webopen');
+  webopenCmd
+    .description('open url quickly')
+    .arguments('<args...>')
+    .action((args) => {
+      webopen(args);
+    });
+  return webopenCmd;
+}
+program.addCommand(buildWebopenCommand());
 
 /**
  * ！！谷歌关闭服务，现已无法使用
@@ -70,15 +84,19 @@ program
  * translate 'hello world' -f en -t zh-CN # 你好世界
  * @example
  */
-program
-  .command('translate')
-  .description('google translate')
-  .argument('<string>', 'string to translate')
-  .option('-f, --from <from>', 'from language', 'auto')
-  .option('-t, --to <to>', 'to language', 'en')
-  .action((text, option) => {
-    translate(text, option);
-  });
+function buildTranslateCommand() {
+  const translateCmd = new Command('translate');
+  translateCmd
+    .description('google translate')
+    .argument('<string>', 'string to translate')
+    .option('-f, --from <from>', 'from language', 'auto')
+    .option('-t, --to <to>', 'to language', 'en')
+    .action((text, option) => {
+      translate(text, option);
+    });
+  return translateCmd;
+}
+program.addCommand(buildTranslateCommand());
 
 /**
  * 在指定目录生成一个带有front matter的markdown文件
@@ -92,23 +110,76 @@ program
  * mdgen config set DEFAULT_OUT_DIR '/home/xxx/downloads'
  * @example
  */
-program
-  .command('mdgen')
-  .description('generate markdown template file with front matter')
-  .argument('<filename>', 'file name')
-  .option('-T, --title <title>', 'the title of markdown')
-  .option('-c, --category <category>', 'category or dirname')
-  .option('-t, --tag <tag>', 'tags of markdown')
-  .option('-d, --dir <dir>', 'where the markdown output')
-  .action((filename, option) => {
-    mdgen(filename, option);
-  })
-  // add config command
-  .command('config')
-  .arguments('<args...>')
-  .action((args) => {
-    configMdgen(...args);
-  });
+function buildMdgenCommand() {
+  const mdgenCmd = new Command('mdgen');
+  mdgenCmd
+    .description('generate markdown template file with front matter')
+    .argument('<filename>', 'file name')
+    .option('-T, --title <title>', 'the title of markdown')
+    .option('-c, --category <category>', 'category or dirname')
+    .option('-t, --tag <tag>', 'tags of markdown')
+    .option('-d, --dir <dir>', 'where the markdown output')
+    .action((filename, option) => {
+      mdgen(filename, option);
+    });
+  mdgenCmd
+    .command('config')
+    .arguments('<args...>')
+    .action((args) => {
+      configMdgen(...args);
+    });
+  return mdgenCmd;
+}
+program.addCommand(buildMdgenCommand());
+
+/**
+ * 一些通过命令行直接操作网易云音乐的方法，功能有上传本地音乐到云盘...
+ * @summary 网易云音乐
+ * @example
+ * # 登录
+ * cloudmusic login 手机号 密码
+ * # 上传当前目录的全部音乐
+ * cloudmusic upload
+ * # 上传当前目录的指定音乐
+ * cloudmusic upload '枫.mp3' '搁浅.mp3'
+ * # 配置默认上传路径，不配置就使用当前目录
+ * cloudmusic config set DEFAULT_UPLOAD_DIR /home/xx/music
+ * # 指定上传目录
+ * cloudmusic upload -d /home/xx/music
+ * @example
+ */
+function buildCloudmusicCommand() {
+  const cloudmusicCmd = new Command('cloudmusic');
+  cloudmusicCmd.description('some tools with nestcloudmusic');
+  // login
+  cloudmusicCmd
+    .command('login')
+    .argument('<phone>', 'your phone of nestcloudmusic')
+    .argument('<password>', 'your password of nestcloudmusic')
+    .action((phone, password) => {
+      loginCloudmusic(phone, password);
+    });
+  // upload music
+  cloudmusicCmd
+    .command('upload')
+    .alias('u')
+    .description('upload named music')
+    .arguments('[args...]', 'named music, or all if name not given')
+    .option('-d, --dirname <dirname>', 'upload target dir')
+    .action((args, { dirname }) => {
+      uploadCloudmusic(args, dirname);
+    });
+  cloudmusicCmd
+    .command('config')
+    .alias('c')
+    .description('config cloudmusic')
+    .arguments('<cfgs...>')
+    .action((cfgs) => {
+      configCloudmusic(...cfgs);
+    });
+  return cloudmusicCmd;
+}
+program.addCommand(buildCloudmusicCommand());
 
 // parse args
 program.parse(process.argv);
